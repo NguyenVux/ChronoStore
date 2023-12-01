@@ -5,9 +5,6 @@ import ProductCard from './ProductCard.vue';
 const props = defineProps({
     products: Array<Product>
 });
-
-console.log("Hello vue");
-console.log(props.products);
 </script>
 
 <template>
