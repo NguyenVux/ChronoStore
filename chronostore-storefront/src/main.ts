@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
+import "@egjs/vue3-flicking/dist/flicking.css";
+
 import App from './App.vue'
 
 import Medusa from '@medusajs/medusa-js'

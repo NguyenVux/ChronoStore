@@ -40,6 +40,7 @@ const plugins = [
     resolve: `@medusajs/file-local`,
     options: {
       upload_dir: "uploads",
+      backend_url: process.env.MEDUSA_ADMIN_BACKEND_URL ?? "http://localhost:9000"
     },
   },
   {
@@ -50,6 +51,12 @@ const plugins = [
       develop: {
         open: process.env.OPEN_BROWSER !== "false",
       },
+    },
+  },
+  {
+    resolve: `medusa-plugin-variant-images`,
+    options: {
+      enableUI: true,
     },
   },
 ];

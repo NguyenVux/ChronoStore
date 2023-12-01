@@ -15,7 +15,7 @@ const productRoute = `/product/${props.product?.id}`;
 </script>
 
 <template>
-<div class="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]">
+<div class="border border-neutral-200 rounded-md hover:shadow-lg w-[205px] h-[324px]">
     <div class="relative">
     <router-link :to="productRoute" class="block">
         <img
@@ -28,7 +28,7 @@ const productRoute = `/product/${props.product?.id}`;
     </router-link>
     </div>
     <div class="p-4 border-t border-neutral-200">
-    <SfLink href="#" variant="secondary" class="no-underline"> {{ product?.title }}</SfLink>
+    <SfLink href="#" variant="secondary" class="no-underline line-clamp-1 w-full"> {{ product?.title }}</SfLink>
     <div class="flex items-center pt-1">
         <SfRating size="xs" :value="5" :max="5" />
 

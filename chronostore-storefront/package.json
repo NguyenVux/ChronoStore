@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "set NODE_ENV=development && vite",
+    "dev": "set NODE_ENV=development && vite --host --port 80",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@egjs/vue3-flicking": "^4.11.1",
     "@medusajs/medusa-js": "^6.1.4",
+    "@vueuse/core": "^10.6.1",
     "deepar": "^5.4.4",
     "vue": "^3.3.8",
     "vue-router": "4"
