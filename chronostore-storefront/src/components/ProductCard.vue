@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { PropType } from 'vue';
-import { SfRating, SfCounter, SfLink, SfButton, SfIconShoppingCart, SfIconFavorite } from '@storefront-ui/vue';
 import { Product } from '../types';
-import { RouterLink } from 'vue-router';
+import { RouteLocationRaw, RouterLink } from 'vue-router';
+import {ProductDetailRouteRecord} from '../Router';
 
 const props = defineProps({
     product: {
@@ -11,39 +11,32 @@ const props = defineProps({
     }
 });
 
-const productRoute = `/product/${props.product?.id}`;
+const productPageRoute : RouteLocationRaw = {
+    name:ProductDetailRouteRecord.name,
+    params:{
+        id:props.product?.id
+    }
+};
 </script>
 
 <template>
-<div class="border border-neutral-200 rounded-md hover:shadow-lg w-[205px] h-[324px]">
-    <div class="relative">
-    <router-link :to="productRoute" class="block">
-        <img
-        :src="product?.thumbnail"
-        alt="Great product"
-        class="block object-cover h-auto rounded-md aspect-square"
-        width="300"
-        height="300"
-        />
-    </router-link>
-    </div>
-    <div class="p-4 border-t border-neutral-200">
-    <SfLink href="#" variant="secondary" class="no-underline line-clamp-1 w-full"> {{ product?.title }}</SfLink>
-    <div class="flex items-center pt-1">
-        <SfRating size="xs" :value="5" :max="5" />
 
-        <SfLink href="#" variant="secondary" class="pl-1 no-underline">
-        <SfCounter size="xs">123</SfCounter>
-        </SfLink>
+<div class="product-card position-relative d-flex flex-column justify-content-between align-items-stretch" >
+    <div class="image-holder">
+        <router-link :to="productPageRoute" >
+            <img  :src="product?.thumbnail" alt="product-item" class="img-fluid product-thumbnail">
+        </router-link>
     </div>
-    <router-link :to="productRoute">
-        <SfButton size="sm">
-            <template #prefix>
-            <SfIconShoppingCart size="sm" />
-            </template>
-        </SfButton>
-    </router-link>
-    
+    <div class="cart-concern position-absolute">
+        <div class="cart-button d-flex">
+            <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a>
+        </div>
     </div>
+    <h3 class="card-title d-inline-block text-uppercase text-truncate">
+        {{ product?.title }}
+    </h3>
 </div>
 </template>
+
+<style scoped>
+</style>

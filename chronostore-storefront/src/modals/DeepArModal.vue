@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import {SfButton, SfLoaderCircular} from '@storefront-ui/vue'
 import * as DeepAr from 'deepar';
-import { usePermission } from '@vueuse/core'
+import Camera from "simple-vue-camera";
 
-const camPerm = usePermission('camera');
 
 interface Events {
     (event: "CloseModal"): void,
@@ -16,14 +15,6 @@ const emit = defineEmits<Events>();
 let deepAR = ref<DeepAr.DeepAR | undefined>(undefined);
 const previewElement = ref(null);
 
-if(previewElement.value === null)
-{
-    console.log("Close model");
-    // emit("CloseModal");
-}
-else {
-    
-}
 
 onMounted(() => {
     if(previewElement.value === null)
@@ -35,7 +26,12 @@ onMounted(() => {
     DeepAr.initialize({
         licenseKey: 'c4b5a6a452925253cb8b00f95f851bb88de194ee4dcdadba4028e1874d6875701faa41749503f0b3',
         previewElement: previewElement.value,
-        effect: 'https://cdn.jsdelivr.net/npm/deepar/effects/aviators'
+        effect: 'https://cdn.jsdelivr.net/npm/deepar/effects/aviators',
+        additionalOptions:{
+            cameraConfig:{
+                disableDefaultCamera: true,
+            }
+        }
     }).then(value => {
         deepAR.value = value;
     }).catch((e)=>{
@@ -44,11 +40,20 @@ onMounted(() => {
   
 });
 
+onBeforeUnmount(() => {
+    if(deepAR.value !== undefined)
+    {
+        console.log("Shutting down");
+        deepAR.value.shutdown();
+    }
+});
+
 
 </script>
 <template>
     <div id="deeparModal" class="flex justify-center items-center">
         <SfButton @click="_ => emit('CloseModal')" class="absolute top-6 right-6">Close</SfButton>
+        <Camera :resolution="{ width: 720, height: 1280 }" autoplay></Camera>
         <div v-if="deepAR === undefined" >
             <SfLoaderCircular size="4xl" />    
         </div>

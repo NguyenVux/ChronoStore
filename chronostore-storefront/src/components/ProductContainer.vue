@@ -1,23 +1,44 @@
 <script lang="ts" setup>
-import { SfIconChevronLeft, SfIconChevronRight } from '@storefront-ui/vue';
 import { Product } from '../types';
 import ProductCard from './ProductCard.vue';
 
 const props = defineProps({
-    products: Array<Product>
+    products:{
+        type:  Array<Product>,
+        value: []
+    }
 });
 
-const chevronSize = '2xl';
+
+const swiperBreakPoints = {
+    0: {
+    slidesPerView: 2,
+    spaceBetween: 20,
+    },
+    980: {
+    slidesPerView: 4,
+    spaceBetween: 20,
+    }
+};
 </script>
 
 <template>
-<div class="relative">
-    <div class="w-full overflow-scroll">
-        <div class="grid grid-rows-2 grid-flow-col gap-4 justify-between w-full">
-            <ProductCard v-for="item in props.products" :key="item.id" :product="item" />
-        </div>
+<section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
+    <div class="container">
+        <swiper-container 
+            slides-per-view="4" 
+            space-between="10" 
+            navigation="true"
+            auto-height="false"
+            :pagination="{
+                clickable: true
+            }"
+            :break-points="swiperBreakPoints"
+        >
+                <swiper-slide v-for="item in props.products" :key="item.id" >
+                    <ProductCard :product="item" />
+                </swiper-slide>
+        </swiper-container>
     </div>
-    <SfIconChevronLeft :size="chevronSize" class="absolute top-1/2 left-0 transform -translate-y-1/2"/>
-    <SfIconChevronRight :size="chevronSize" class="absolute top-1/2 right-0 transform -translate-y-1/2"/>
-</div>
+</section>
 </template>
