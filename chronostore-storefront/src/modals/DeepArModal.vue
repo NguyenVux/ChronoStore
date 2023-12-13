@@ -24,7 +24,7 @@ onMounted(() => {
         return;
     }
     DeepAr.initialize({
-        licenseKey: 'c4b5a6a452925253cb8b00f95f851bb88de194ee4dcdadba4028e1874d6875701faa41749503f0b3',
+        licenseKey: import.meta.env.DEEPAR_SECRET,
         previewElement: previewElement.value,
         effect: 'https://cdn.jsdelivr.net/npm/deepar/effects/aviators',
         additionalOptions:{

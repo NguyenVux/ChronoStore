@@ -7,27 +7,34 @@ export async function POST(
   res: MedusaResponse
 ): Promise<void> {
   const facedbService = req.scope.resolve('facedbService') as FacedbService;
-  const faceApiService = req.scope.resolve('faceService') as FaceService;
+  const faceService = req.scope.resolve('faceService') as FaceService;
   const config = req.scope.resolve('configModule') as ConfigModule;
-  const feature = await facedbService.GetFeature(req.body.email);
-  if(feature === null)
+  const user = await facedbService.GetUser(req.body.email);
+  if(user === null)
   {
     res.status(404);
     res.send('customer id not exist or did enable face login yet');
     return;
   }
-  const requestDescriptor = await faceApiService.GetFeatureFromImage(req.file.path);
-  const dbDescriptor = feature.features;
-  if(faceApiService.IsMatch(requestDescriptor,dbDescriptor) < 0.5)
+  const recogResult = await faceService.Recognize(new Blob([req.file.buffer]),user.skybioUid);
+  const result = recogResult.photos
+                .map(photo => photo.tags.map(e => e.uids))
+                .reduce((acc,item) => acc.concat(item),[])
+                .reduce((acc,item) => acc.concat(item),[])
+                .filter(uids => uids.uid ===user.skybioUid)
+                .every(uid => uid.confidence > 80);
+  if(result)
   {
     const token = jwt.sign(
-      { customer_id: feature.customerId, domain: "store" },
+      { customer_id: user.id, domain: "store" },
       config.projectConfig.jwt_secret,
       {
         expiresIn: "24h",
       }
     );
-    res.send(token);
+    res.send({
+      'access-token': token
+    });
   }
   else {
     res.status(401);

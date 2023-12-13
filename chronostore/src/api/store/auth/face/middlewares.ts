@@ -8,7 +8,8 @@ import type {
 
 import Multer from 'multer';
 import fs from 'fs';
-const faceImg = Multer({dest: 'uploads/face-login/'});
+const storage = Multer.memoryStorage();
+const faceImg = Multer({storage: storage});
 
 
 function removeFile(filePath): Promise<void>
@@ -73,7 +74,7 @@ const routes:MiddlewareRoute[] = [
     {
         matcher: '/store/auth/face',
         middlewares: [
-            faceImg.single('face'),
+            faceImg.single('file'),
             function (
                 req: MedusaRequest, 
                 res: MedusaResponse,
@@ -89,12 +90,6 @@ const routes:MiddlewareRoute[] = [
                     res.end();
                     return;
                 }
-                const fileLocation = req.file.path;
-                res.once('close', () => {
-                    removeFile(fileLocation).then(()=> {
-                        logger.info(`removed ${fileLocation}`);
-                    }).catch(logger.error);
-                });
                 next();
             },
             function (
@@ -104,7 +99,6 @@ const routes:MiddlewareRoute[] = [
             )
             {
                 const logger = req.scope.resolve<Logger>('logger');
-                console.log(req.file);
                 if(req.body.email === undefined)
                 {
                     logger.error('missing email field');

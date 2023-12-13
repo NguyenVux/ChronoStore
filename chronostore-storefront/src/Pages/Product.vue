@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
-import Medusa from '@medusajs/medusa-js';
 import { inject, ref } from 'vue';
 import { ServiceKeys } from '../Constants';
 import { Product, ProductVariant } from '../types';
@@ -8,16 +7,18 @@ import DeepArModel from '../modals/DeepArModal.vue';
 import ProductOption from '../components/ProductOptions.vue';
 import ProductImage from '../components/ProductImage.vue';
 
+import { MedusaService } from '../services/MedusaStoreService';
+const medusa = inject<MedusaService>(ServiceKeys.MedusaJs);
 
 const route = useRoute();
-const medusa = inject<Medusa>(ServiceKeys.MedusaJs);
 
 let product = ref<Product | undefined>(undefined);
 const selectedVariant = ref<ProductVariant>();
 
-medusa?.products.retrieve(route.params.id as string)
+
+medusa?.products.Get(route.params.id as string)
             .then(p => {
-              product.value = p.product;
+              product.value = p;
               selectedVariant.value = product.value?.variants[0] as ProductVariant;
             })
             .catch(console.error);
@@ -32,7 +33,7 @@ function CloseModal() {
 
 <template>
     <template  v-if="product !== undefined">
-      <section id="selling-product" class="single-product padding-xlarge">
+      <section id="selling-product" class="single-product">
         <div class="container">
           <div class="row mt-5">
             <div class="col-lg-6">

@@ -1,11 +1,9 @@
 import { Lifetime } from "awilix"
-import * as faceAPI from '@vladmandic/face-api';
-import * as fs from 'fs';
-import { Customer, Logger } from "@medusajs/medusa";
-import { EntityManager, Repository } from "typeorm";
+import { Logger } from "@medusajs/medusa";
+import { EntityManager, IsNull, Not, Repository } from "typeorm";
 import { FaceFeature } from "../models/faceFeature";
-
-interface CtorArgs{
+import { Customer } from '../models/ExCustomer';
+interface CtorArgs {
   logger: Logger,
   manager: EntityManager
 }
@@ -13,28 +11,24 @@ interface CtorArgs{
 class FacedbService {
   static LIFE_TIME = Lifetime.SCOPED;
   private logger: Logger;
-  private featureRepo: Repository<FaceFeature>;
+  private customerRepo: Repository<Customer>;
 
-  constructor({logger,manager}:CtorArgs) {
+  constructor({ logger, manager }: CtorArgs) {
     this.logger = logger;
-    this.featureRepo = manager.getRepository(FaceFeature);
+    this.customerRepo = manager.getRepository(Customer);
   }
 
-  public GetFeature(email: string) : Promise<FaceFeature>
-  {
-    return this.featureRepo.findOne({
-        where: {
-        customer:{
-          email
-        }
+  public async UpdateSkyBioId(customer_id: string, uid: string) {
+    this.customerRepo.update({ id: customer_id }, { skybioUid: uid });
+  }
+
+  public async GetUser(email: string) {
+    return this.customerRepo.findOne({
+      where: {
+        email: email,
+        skybioUid: Not(IsNull())
       }
-    });
-  }
-
-  public async UpdateFeature(customerId: string,features: number[]) : Promise<void>
-  {
-    const newItem = this.featureRepo.create({customerId,features});
-    this.featureRepo.save(newItem);
+    })
   }
 
 }

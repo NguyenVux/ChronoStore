@@ -132,8 +132,8 @@ padding-top: 7em;
 padding-bottom: 7em;
 }
 .padding-xlarge {
-padding-top: 9.5em;
-padding-bottom: 9.5em;
+padding-top: 100px;
+/* padding-bottom: 9.5em; */
 }
 
 /* no padding */
@@ -586,7 +586,7 @@ width: 28px;
 /* 1. Header
 /*----------------------------------------------*/
 .site-header {
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     z-index: 10;
     transition: background 0.3s ease-out;
@@ -632,7 +632,8 @@ width: 28px;
 
 @media only screen and (max-width: 991px) {
 #navbar .user-items {
-    display: none;
+    padding: 0 !important;
+    width: 100%;
 }
 }
 
