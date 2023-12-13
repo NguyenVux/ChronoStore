@@ -21,7 +21,7 @@ export const HomeRouteRecord : RouteRecordRaw =  {
     component: Home
 }
 export const LoginRouteRecord : RouteRecordRaw =  {
-    path: "/login/",
+    path: "/login",
     name:"login",
     component: Login,
 }

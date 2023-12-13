@@ -73,7 +73,7 @@ async function submit(){
                 </div>
       
                 <div class="pt-1 mb-4">
-                  <!-- <input value="Login" type="submit" id="form2Example28" class="form-control form-control-lg" /> -->
+                  <input value="Login" type="submit" id="form2Example28" class="form-control form-control-lg" />
                   <button @click.prevent="()=>openFaceLogin=true" id="form2Example28" class="form-control form-control-lg">Face login</button>
                 </div>
                 <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
@@ -87,7 +87,7 @@ async function submit(){
           </div>
         </div>
       </div>  
-  <face-one v-if="openFaceLogin" @close-modal="()=>openFaceLogin=false" @done-capture="doneCapture" />
+  <faceOne v-if="openFaceLogin" @close-modal="()=>openFaceLogin=false" @done-capture="doneCapture" />
 </section>
 </template>
 
