@@ -33,11 +33,12 @@ export async function POST(
       }
     );
     res.send({
-      'access-token': token
+      access_token: token
     });
   }
   else {
     res.status(401);
+    res.send('unauthorized');
     res.end();
   }
 }

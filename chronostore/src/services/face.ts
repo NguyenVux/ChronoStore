@@ -2,7 +2,7 @@ import { Lifetime } from "awilix";
 import fs from 'fs/promises';
 import { PathLike } from "fs";
 import axios, { AxiosResponse } from "axios";
-import { Point, RecogRespone } from "src/types/face";
+import { RecogRespone } from "src/types/face";
 
 interface ApiError {
   status: string;
@@ -30,9 +30,9 @@ export interface Tag {
   manual: boolean;
   width: number;
   height: number;
-  center:Point;
-  eye_left:Point;
-  eye_right:Point;
+  center:any;
+  eye_left:any;
+  eye_right:any;
   yaw: number;
   roll: number;
   pitch: number;
