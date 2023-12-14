@@ -13,22 +13,18 @@ const me = ref<Customer | null>(null);
 const faceRegisterModal = ref(false);
 async function doneCapture(files: Blob[])
 {
-    // medusa?.customer.registerFace(files);
-    // faceRegisterModal.value = false;
-    // medusa?.customer.me().then(result => {
-    //     me.value = result;
-    // });
-}
-
-if(store.state.token === null)
-{
-    router.push(LoginRouteRecord);
-}
-else {
+    medusa?.customer.registerFace(files);
+    faceRegisterModal.value = false;
     medusa?.customer.me().then(result => {
         me.value = result;
     });
 }
+
+
+medusa?.customer.me().then(result => {
+    me.value = result;
+});
+
 
 function logout() {
     store.commit('update-token',null);
@@ -49,7 +45,7 @@ function logout() {
               class="rounded-circle img-fluid" style="width: 150px;">
             <h5 class="my-3">{{me.first_name}}</h5>
             <div class="d-flex justify-content-center mb-2">
-              <button v-if="true || me.skybioUid === null" @click="()=>faceRegisterModal=true" type="button" class="btn btn-primary">Enable face login</button>
+              <button v-if="me.skybioUid === null" @click="()=>faceRegisterModal=true" type="button" class="btn btn-primary">Enable face login</button>
               <button @click="logout" type="button" class="btn btn-outline-secondary ms-1">Logout</button>
             </div>
           </div>

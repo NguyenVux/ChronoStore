@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
-import { inject, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import { ServiceKeys } from '../Constants';
 import { Product, ProductVariant } from '../types';
 import DeepArModel from '../modals/DeepArModal.vue';
@@ -8,6 +8,7 @@ import ProductOption from '../components/ProductOptions.vue';
 import ProductImage from '../components/ProductImage.vue';
 
 import { MedusaService } from '../services/MedusaStoreService';
+import { store } from '../store';
 const medusa = inject<MedusaService>(ServiceKeys.MedusaJs);
 
 const route = useRoute();
@@ -20,8 +21,13 @@ medusa?.products.Get(route.params.id as string)
             .then(p => {
               product.value = p;
               selectedVariant.value = product.value?.variants[0] as ProductVariant;
+              store.commit('close-loading');
             })
             .catch(console.error);
+
+onMounted(()=>{
+  store.commit('open-loading');
+})
 
 
 const isShowdeepArModal = ref<Boolean>(false);

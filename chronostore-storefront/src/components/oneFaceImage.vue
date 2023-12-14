@@ -1,10 +1,10 @@
 <script lang='ts' setup>
 import * as FaceAPI from '@vladmandic/face-api';
-import { computed, onMounted, onUnmounted, reactive, ref, toRaw } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 interface Events {
     (event: 'close-modal'): void,
-    (event: 'done-capture', files: Blob[]) : void,
+    (event: 'done-capture', files: Blob) : void,
 }
 const isFaceAPILoaded = ref(false);
 const emit = defineEmits<Events>();
@@ -15,72 +15,17 @@ const detectorOpts = new FaceAPI
                                 scoreThreshold:0.3
                             });
 
-interface angle {
-    yaw:number,
-    pitch: number,
-    roll: number,
-}
-interface FaceAngleSet {
-    name:string,
-    comparer: (value: angle) => boolean
-}
-const faceAngleSet : FaceAngleSet[] = [
-    {
-        name: 'front',
-        comparer: (value) =>{
-
-            return value.yaw > -50 && value.yaw < 50 
-                && value.roll > -40 && value.roll < 40
-                && value.pitch > -40 && value.pitch < 40;
-        }
-    },
-    {
-        name: 'up',
-        comparer: (value) =>{
-            return value.yaw > -50 && value.yaw < 50 
-                && value.roll > -40 && value.roll < 40
-                && value.pitch > 10;
-        }
-    },
-    {
-        name: 'down',
-        comparer: (value) =>{
-            return value.yaw > -50 && value.yaw < 50 
-                && value.roll > -40 && value.roll < 40
-                && value.pitch < -4;
-        }
-    },
-    {
-        name: 'left',
-        comparer: (value) =>{
-            return value.yaw < -70 
-                && value.roll > -40 && value.roll < 40
-                && value.pitch > -40 && value.pitch < 40;
-        }
-    },
-    {
-        name: 'right',
-        comparer: (value) =>{
-            return value.yaw > 80 
-                && value.roll > -40 && value.roll < 40
-                && value.pitch > -40 && value.pitch < 40;
-        }
-    },
-];
-
-const faceSetIndex = ref(0);
+const faceDetected = ref(false);
 const beginCapture = ref(false);
-const totalFiles = reactive<Blob[]>([]);
 
 
-async function IsMatch(angleSet: FaceAngleSet) {
-    console.log('before');
+async function IsMatch() {
     console.log(FaceAPI.nets.tinyYolov2.isLoaded);
-    const result = await FaceAPI.detectAllFaces(
+    const result = await FaceAPI.detectSingleFace(
         video.value as HTMLVideoElement, 
         detectorOpts
-        ).withFaceLandmarks(true).withFaceDescriptors();
-    if(result !== undefined && angleSet.comparer(result[0].angle as angle))
+        ).withFaceLandmarks(true).withFaceDescriptor();
+    if(result !== undefined)
     {
         return result;
     }
@@ -111,21 +56,20 @@ function takeASnap(data: FaceAPI.FaceDetection){
 }
 
 async function Detect() {
-    if(faceSetIndex.value >= faceAngleSet.length) {
-        emit('done-capture',toRaw(totalFiles));
-        return;
-    }
     if( video.value !== null && video.value !== undefined)
     {
-        const result = await IsMatch(faceAngleSet[faceSetIndex.value]);
+        const result = await IsMatch();
         if(result !== undefined)
         {
-            let image = await takeASnap(result.detection);
-            if(image != null)
-            {
-                totalFiles.push(image);
-                faceSetIndex.value++;
-            }
+            setTimeout(async () => {
+                const image = await takeASnap(result.detection);
+                if(image !== null)
+                {
+                    emit('done-capture',image);
+                }
+            }, 700);
+            faceDetected.value = true;
+            return;
         }
     }
     requestId.value = requestAnimationFrame(Detect);
@@ -133,13 +77,7 @@ async function Detect() {
 
 const video = ref<HTMLVideoElement>();
 const stream = ref<MediaStream>();
-const message = computed(()=> {
-    if(faceSetIndex.value < faceAngleSet.length)
-    {
-        return faceAngleSet[faceSetIndex.value].name;
-    }
-    return 'done';
-});
+
 
 onMounted(async ()=>{
     await LoadRequireModel();
@@ -190,7 +128,7 @@ async function LoadRequireModel() {
             </video>
             <div v-show="beginCapture" id="overlay">
                 <button @click="()=>cancel()" class="btn btn btn-secondary btn-lg"> cancel</button>
-                <div id="face-status"> Please facing {{message}}</div>
+                <div v-if="faceDetected" id="face-status">Face Detected</div>
             </div>
         </div>
     </div>
@@ -208,7 +146,7 @@ async function LoadRequireModel() {
 }
 #face-status
 {
-    margin-top: 3em;
+    margin-bottom: 3em;
     background-color: rgba(0, 0, 0, 0.345);
     color: white;
     padding: 2em;
@@ -220,11 +158,11 @@ async function LoadRequireModel() {
 }
 
 #preview-video {
-    position: absolute;
+    /* position: absolute; */
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
+    /* top: 0;
+    left: 0; */
 }
 #video-container {
     position: fixed;
@@ -241,11 +179,14 @@ async function LoadRequireModel() {
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    padding: 3em;
+    padding: 2em;
 }
 
 #overlay > *
 {
     z-index: 100000;
+}
+video {
+  object-fit: cover;
 }
 </style>

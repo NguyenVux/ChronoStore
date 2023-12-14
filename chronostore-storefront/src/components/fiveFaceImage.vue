@@ -74,7 +74,6 @@ const totalFiles = reactive<Blob[]>([]);
 
 
 async function IsMatch(angleSet: FaceAngleSet) {
-    console.log(FaceAPI.nets.tinyYolov2.isLoaded);
     const result = await FaceAPI.detectSingleFace(
         video.value as HTMLVideoElement, 
         detectorOpts

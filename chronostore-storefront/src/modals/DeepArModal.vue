@@ -24,12 +24,12 @@ onMounted(() => {
         return;
     }
     DeepAr.initialize({
-        licenseKey: import.meta.env.DEEPAR_SECRET,
+        licenseKey: import.meta.env.VITE_DEEPAR_SECRET,
         previewElement: previewElement.value,
-        effect: 'https://cdn.jsdelivr.net/npm/deepar/effects/aviators',
+        effect: 'https://chronostore.io.vn//deepar/wrist.deepar',
         additionalOptions:{
             cameraConfig:{
-                disableDefaultCamera: true,
+                disableDefaultCamera: false,
             }
         }
     }).then(value => {
@@ -51,30 +51,25 @@ onBeforeUnmount(() => {
 
 </script>
 <template>
-    <div id="deeparModal" class="flex justify-center items-center">
-        <SfButton @click="_ => emit('CloseModal')" class="absolute top-6 right-6">Close</SfButton>
-        <Camera :resolution="{ width: 720, height: 1280 }" autoplay></Camera>
-        <div v-if="deepAR === undefined" >
-            <SfLoaderCircular size="4xl" />    
+    <div id="deeparContainer" class="vh-100 vw-100 position-fixed top-0 left-0  spinner-container">
+        <div id="previewElement" ref="previewElement">
+            
         </div>
-        <div v-show="deepAR !== undefined"  id="previewElement" ref="previewElement"></div>
-    </div>
+    </div>       
 </template>
 
 <style scoped>
-
 #previewElement {
-    width: 80%;
-    height: 80%;
+    width: 90%;
+    height: 90%;
 }
 
-#deeparModal {
-    z-index: 999;
-    position:fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #5252526e;
+#deeparContainer
+{
+    background-color: rgba(82, 82, 82, 0.704);
+    z-index: 99999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

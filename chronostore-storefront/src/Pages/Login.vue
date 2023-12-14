@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
-import { inject, reactive, ref} from 'vue';
+import { PropType, inject, reactive, ref} from 'vue';
 
 import { store } from '../store';
-import { HomeRouteRecord, ProfileRouteRecord, router } from '../Router';
+import { HomeRouteRecord, RegistrationRouteRecord, router } from '../Router';
 import { ServiceKeys } from '../Constants';
 import { MedusaService } from '../services/MedusaStoreService';
 
@@ -14,12 +14,9 @@ import faceOne from '../components/oneFaceImage.vue';
 const medusa = inject<MedusaService>(ServiceKeys.MedusaJs);
 const openFaceLogin = ref(false);
 
-function doneCapture(file: Blob[]) {
-    console.log(file);
-}
-if(store.state.token !== null)
-{
-    router.push(ProfileRouteRecord);
+
+function backToPrevious(){
+  router.push(store.state.router ?? HomeRouteRecord);
 }
 
 const loginData = reactive({
@@ -39,13 +36,37 @@ async function submit(){
     if(valid)
     {
         try {
+            store.commit('open-loading');
             const data = await medusa?.customer.login({email:loginData.email,password:loginData.password});
             store.commit('update-token',data?.access_token);
-            router.push(HomeRouteRecord);
+            backToPrevious();
         } catch (err) {
             console.log(err);
         }
+        finally
+        {
+          store.commit('close-loading');
+        }
     }
+}
+const loggingIn = ref(false);
+async function doneCapture(file: Blob){
+    loggingIn.value = true;
+    openFaceLogin.value = false;
+    if(loginData.email.length > 0)
+    {
+      try {
+          store.commit('open-loading');
+          const data = await medusa?.customer.faceLogin({email:loginData.email,file:file});
+          store.commit('update-token',data?.access_token);
+          backToPrevious();
+          store.commit('close-loading');
+          return;
+      } catch (err) {
+          console.log(err);
+      }
+    }
+    loggingIn.value = false;
 }
 
 
@@ -73,11 +94,15 @@ async function submit(){
                 </div>
       
                 <div class="pt-1 mb-4">
-                  <input value="Login" type="submit" id="form2Example28" class="form-control form-control-lg" />
-                  <button @click.prevent="()=>openFaceLogin=true" id="form2Example28" class="form-control form-control-lg">Face login</button>
+                  <input v-if="!loggingIn" value="Login" type="submit" id="form2Example28" class="form-control form-control-lg" />
+                  <button v-if="!loggingIn" @click.prevent="()=>openFaceLogin=true" id="form2Example28" class="form-control form-control-lg">Face login</button>
                 </div>
                 <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
-                <p>Don't have an account? <a href="#!" class="link-info">Register here</a></p>
+                <p>Don't have an account? 
+                  <router-link :to="RegistrationRouteRecord" >
+                    Register Here
+                  </router-link>
+                </p>
               </form>
             </div>
           </div>
