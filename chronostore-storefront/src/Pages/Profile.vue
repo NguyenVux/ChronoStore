@@ -13,11 +13,13 @@ const me = ref<Customer | null>(null);
 const faceRegisterModal = ref(false);
 async function doneCapture(files: Blob[])
 {
-    medusa?.customer.registerFace(files);
-    faceRegisterModal.value = false;
-    medusa?.customer.me().then(result => {
-        me.value = result;
-    });
+
+  faceRegisterModal.value = false;
+  store.commit('open-loading');
+  await medusa?.customer.registerFace(files);
+  const result = await medusa?.customer.me();
+  if(result) me.value = result;
+  store.commit('close-loading');
 }
 
 

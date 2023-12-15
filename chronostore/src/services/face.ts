@@ -95,6 +95,17 @@ class FaceService {
       }
     }).then(respone => respone.data);
   }
+  public async FaceStatus(files: Blob)
+  {
+    const baseFormdata = this.BuildBaseFormData();
+    baseFormdata.append('urls',files);
+
+    return axios.post<any>(`${FaceService.SkyBioOpts.endpoint}/faces/status`, baseFormdata,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(respone => respone.data);
+  }
 
   public async SaveTags(tid: string[],customerId:string){
     // const tid: string[] = [];

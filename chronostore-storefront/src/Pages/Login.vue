@@ -42,6 +42,7 @@ async function submit(){
             backToPrevious();
         } catch (err) {
             console.log(err);
+            logginError.value = err;
         }
         finally
         {
@@ -50,6 +51,7 @@ async function submit(){
     }
 }
 const loggingIn = ref(false);
+const logginError = ref<any>(null);
 async function doneCapture(file: Blob){
     loggingIn.value = true;
     openFaceLogin.value = false;
@@ -60,13 +62,15 @@ async function doneCapture(file: Blob){
           const data = await medusa?.customer.faceLogin({email:loginData.email,file:file});
           store.commit('update-token',data?.access_token);
           backToPrevious();
-          store.commit('close-loading');
-          return;
       } catch (err) {
           console.log(err);
+          logginError.value = err;
+      }
+      finally{
+        store.commit('close-loading');
+        loggingIn.value = false;
       }
     }
-    loggingIn.value = false;
 }
 
 
@@ -96,6 +100,9 @@ async function doneCapture(file: Blob){
                 <div class="pt-1 mb-4">
                   <input v-if="!loggingIn" value="Login" type="submit" id="form2Example28" class="form-control form-control-lg" />
                   <button v-if="!loggingIn" @click.prevent="()=>openFaceLogin=true" id="form2Example28" class="form-control form-control-lg">Face login</button>
+                </div>
+                <div v-if="logginError !== null" class="alert alert-danger">
+                  <strong>{{logginError}}</strong>
                 </div>
                 <p class="small mb-5 pb-lg-2"><a class="text-muted" href="#!">Forgot password?</a></p>
                 <p>Don't have an account? 

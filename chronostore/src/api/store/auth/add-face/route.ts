@@ -21,6 +21,8 @@ export async function POST(
                     return e.value.photos.map(e => e.tags).reduce((acc,item)=> acc.concat(item),[]);
                   }).reduce((acc,item)=>acc.concat(item),[]).map(e => e.tid);
   const uid = await faceService.SaveTags(tids,req.user.customer_id);
-  await faceService.TrainFace(uid);
+  await faceService.TrainFace(req.user.customer_id);
   await facedbService.UpdateSkyBioId(req.user.customer_id,uid);
+  res.status(200);
+  res.end();
 }

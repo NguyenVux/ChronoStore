@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, onMounted, reactive, toRaw } from 'vue';
+import { computed, inject, onMounted, reactive, ref, toRaw } from 'vue';
 import { LoginRouteRecord, router, ProfileRouteRecord } from '../Router';
 import useVuelidate from '@vuelidate/core';
 import { required,email,sameAs,numeric } from '@vuelidate/validators';
@@ -88,11 +88,15 @@ const fields = [
   },
 ]
 
+
+const logginError = ref<any>(null);
+
 async function submit(){
   const result = await vuelidate.value.$validate();
   if(result)
   {
     try {
+      store.commit('open-loading');
       console.log(formData);
       const data = toRaw(formData);
       await medusa?.customer.register(
@@ -107,8 +111,12 @@ async function submit(){
       const loginResult = await medusa?.customer.login({email:formData.email,password:formData.password});
       store.commit('update-token',loginResult?.access_token);
       router.push(ProfileRouteRecord);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.log(error);
+      logginError.value = error.message;
+    }
+    finally {
+      store.commit('close-loading');
     }
 
   }
@@ -144,6 +152,9 @@ async function submit(){
                     </div>
                     <span>re-enter password</span>
                   </label>
+                </div>
+                <div v-if="logginError !== null" class="alert alert-danger">
+                  <strong>{{logginError}}</strong>
                 </div>
 
                 <div class="d-flex justify-content-center">

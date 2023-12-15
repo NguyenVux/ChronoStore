@@ -120,7 +120,7 @@ export class CustomerService {
         {
             return (await result.json()) as loginResult;
         }
-        throw new Error(await result.text());
+        throw await result.text();
     }
 
     async registerFace(files: Blob[]) : Promise<any>
@@ -138,9 +138,9 @@ export class CustomerService {
 
         if(result.ok)
         {
-            return (await result.json()) as any;
+            return;
         }
-        throw new Error(await result.text());
+        throw await result.text();
     }
     async register(data: registerData) : Promise<any>
     {
@@ -157,7 +157,8 @@ export class CustomerService {
         {
             return (await result.json()) as any;
         }
-        throw new Error(await result.text());
+        const error = await result.json();
+        throw error;
     }
 }
 export interface MedusaService{
