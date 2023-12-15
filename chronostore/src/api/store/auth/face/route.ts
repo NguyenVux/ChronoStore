@@ -17,13 +17,14 @@ export async function POST(
     return;
   }
   const recogResult = await faceService.Recognize(new Blob([req.file.buffer]),user.skybioUid);
-  const result = recogResult.photos
-                .map(photo => photo.tags.map(e => e.uids))
-                .reduce((acc,item) => acc.concat(item),[])
-                .reduce((acc,item) => acc.concat(item),[])
-                .filter(uids => uids.uid ===user.skybioUid)
+  const uids = recogResult.photos
+            .map(photo => photo.tags.map(e => e.uids))
+            .reduce((acc,item) => acc.concat(item),[])
+            .reduce((acc,item) => acc.concat(item),[])
+            .filter(uids => uids.uid === user.skybioUid);
+  const result = uids
                 .every(uid => uid.confidence > 80);
-  if(result)
+  if(result && uids.length > 0)
   {
     const token = jwt.sign(
       { customer_id: user.id, domain: "store" },
