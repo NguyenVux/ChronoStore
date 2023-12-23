@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { HomeRouteRecord, ProfileRouteRecord } from '../Router';
+import { CartRouteRecord, HomeRouteRecord, ProfileRouteRecord } from '../Router';
 
 
 </script>
@@ -64,11 +64,11 @@ import { HomeRouteRecord, ProfileRouteRecord } from '../Router';
                         </router-link>
                         </li>
                         <li>
-                        <a href="cart.html">
+                        <router-link :to="CartRouteRecord">
                             <svg class="cart">
                             <use xlink:href="#cart"></use>
                             </svg>
-                        </a>
+                        </router-link>
                         </li>
                     </ul>
                     </div>

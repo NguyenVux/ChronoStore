@@ -25,8 +25,22 @@ export interface Pagination {
 }
 export type ProductsPagination = { products:Product[] } & Pagination;
 export class ProductService {
-    async ListAll() : Promise<ProductsPagination> {
-        const result = await fetch(`${baseUrl}/store/products`,{});
+    async ListAll(limit?:number,offset?: number,search?:string) : Promise<ProductsPagination> {
+        const params = new URLSearchParams();
+
+        if(search !== undefined)
+        {
+            params.append('q',search);
+        }
+        if(limit !== undefined)
+        {
+            params.append('limit',`${limit}`);
+        }
+        if(offset !== undefined)
+        {
+            params.append('offset',`${offset}`);
+        }
+        const result = await fetch(`${baseUrl}/store/products?${params.toString()}`,{});
         if(result.ok)
         {
             return await result.json();
@@ -113,6 +127,9 @@ export class CustomerService {
         formdata.append('file',data.file);
         const result = await fetch(`${baseUrl}/store/auth/face`,{
             method: 'POST',
+            headers: {
+                // 'Authorization': `Bearer ${store.state.token}`,
+            },
             body: formdata ,
         });
 
@@ -161,11 +178,100 @@ export class CustomerService {
         throw error;
     }
 }
+
+export class CartService {
+
+    async Create(): Promise<any> {
+        const result = await fetch(`${baseUrl}/store/carts`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(result.ok)
+        {
+            return ((await result.json()) as any).cart;
+        }
+        throw 'Error Has occured';
+    }
+    async AddLineItem(cartId: string,variant_id: string,quantity: number): Promise<any> {
+        const result = await fetch(`${baseUrl}/store/carts/${cartId}/line-items`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                variant_id,
+                quantity,
+            })
+        });
+
+        if(result.ok)
+        {
+            return ((await result.json()) as any).cart;
+        }
+        throw 'Error Has occured';
+    }
+    async RemoveLineItem(cartId: string,lineId: string): Promise<any> {
+        const result = await fetch(`${baseUrl}/store/carts/${cartId}/line-items/${lineId}`,{
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if(result.ok)
+        {
+            return ((await result.json()) as any).cart;
+        }
+        throw 'Error Has occured';
+    }
+
+    async UpdateLineItem(cartId: string,lineId: string,quantity: number): Promise<any> {
+        const result = await fetch(`${baseUrl}/store/carts/${cartId}/line-items/${lineId}`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                quantity,
+            })
+        });
+
+        if(result.ok)
+        {
+            return ((await result.json()) as any).cart;
+        }
+        throw 'Error Has occured';
+    }
+    async GetCart(cartId: string): Promise<any> {
+        const result = await fetch(`${baseUrl}/store/carts/${cartId}`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(result.ok)
+        {
+            return ((await result.json()) as any).cart;
+        }
+        throw 'Error Has occured';
+    }
+}
 export interface MedusaService{
     products: ProductService,
     customer: CustomerService,
+    cart: CartService,
 }
 export const MedusaStoreService:MedusaService = {
     products : new ProductService(),
     customer : new CustomerService(),
+    cart: new CartService(),
 }

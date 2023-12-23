@@ -1,14 +1,22 @@
 <script lang="ts" setup>
 import { ServiceKeys } from '../Constants';
-import { inject, ref } from 'vue';
+import { inject, reactive, ref } from 'vue';
 import { Customer, MedusaService } from '../services/MedusaStoreService';
 import { store } from '../store';
 import { LoginRouteRecord, router } from '../Router';
 import face from '../components/fiveFaceImage.vue';
+import Medusa from '@medusajs/medusa-js';
+import {Customer as MCustomer} from '@medusajs/medusa';
 
+const medusas = reactive<Medusa>(new Medusa({
+  baseUrl: import.meta.env.VITE_MEDUSA_BACKEND_URL,
+  maxRetries: 10,
+}));
 const medusa = inject<MedusaService>(ServiceKeys.MedusaJs);
 
-const me = ref<Customer | null>(null);
+type CCustomer = {skybioUid:string} & Omit<MCustomer,'password_hash'>;
+
+const me = ref<CCustomer | null>(null);
 
 const faceRegisterModal = ref(false);
 async function doneCapture(files: Blob[])
@@ -17,15 +25,18 @@ async function doneCapture(files: Blob[])
   faceRegisterModal.value = false;
   store.commit('open-loading');
   await medusa?.customer.registerFace(files);
-  const result = await medusa?.customer.me();
-  if(result) me.value = result;
+  const result = await medusas.customers.retrieve();
+  if(result) me.value = result.customer as CCustomer;
   store.commit('close-loading');
 }
 
 
-medusa?.customer.me().then(result => {
-    me.value = result;
+medusas.customers.retrieve().then(result =>{
+  me.value = (result.customer as CCustomer);
 });
+// medusa?.customer.me().then(result => {
+//     me.value = result;
+// });
 
 
 function logout() {

@@ -27,11 +27,6 @@ const productPageRoute : RouteLocationRaw = {
             <img  :src="product?.thumbnail" alt="product-item" class="img-fluid product-thumbnail">
         </router-link>
     </div>
-    <div class="cart-concern position-absolute">
-        <div class="cart-button d-flex">
-            <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a>
-        </div>
-    </div>
     <h3 class="card-title d-inline-block text-uppercase text-truncate">
         {{ product?.title }}
     </h3>

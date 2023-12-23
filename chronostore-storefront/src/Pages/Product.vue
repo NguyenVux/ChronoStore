@@ -6,6 +6,7 @@ import { Product, ProductVariant } from '../types';
 import DeepArModel from '../modals/DeepArModal.vue';
 import ProductOption from '../components/ProductOptions.vue';
 import ProductImage from '../components/ProductImage.vue';
+import AddToCard from '../components/cart/AddToCard.vue';
 
 import { MedusaService } from '../services/MedusaStoreService';
 import { store } from '../store';
@@ -16,6 +17,7 @@ const route = useRoute();
 let product = ref<Product | undefined>(undefined);
 const selectedVariant = ref<ProductVariant>();
 
+const quantity = ref<number>(1);
 
 medusa?.products.Get(route.params.id as string)
             .then(p => {
@@ -64,13 +66,13 @@ function CloseModal() {
                     <div class="stock-button-wrap pt-3">
                       <div class="input-group product-qty">
                           <span class="input-group-btn">
-                              <button type="button" class="quantity-left-minus btn btn-number"  data-type="minus" data-field="">
+                              <button @click="()=> quantity = Math.max(quantity-1,0)" type="button" class="quantity-left-minus btn btn-number"  data-type="minus" data-field="">
                                 -
                               </button>
                           </span>
-                          <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
+                          <input type="text" id="quantity" name="quantity" class="form-control input-number" v-model="quantity" min="1" max="100">
                           <span class="input-group-btn">
-                              <button type="button" class="quantity-right-plus btn btn-number" data-type="plus" data-field="">
+                              <button @click="()=> quantity++" type="button" class="quantity-right-plus btn btn-number" data-type="plus" data-field="">
                                   +
                               </button>
                           </span>
@@ -78,7 +80,8 @@ function CloseModal() {
                       <div class="qty-button d-flex flex-wrap pt-3">
                         <button @click="_ => isShowdeepArModal=true" class="btn btn-light btn-medium text-uppercase me-3 mt-3">Try On</button>
                         <button type="submit" class="btn btn-primary btn-medium text-uppercase me-3 mt-3">Buy now</button>
-                        <button type="submit" name="add-to-cart" value="1269" class="btn btn-black btn-medium text-uppercase mt-3">Add to cart</button>
+                        <!-- <button type="submit" name="add-to-cart" value="1269" class="btn btn-black btn-medium text-uppercase mt-3">Add to cart</button> -->
+                        <AddToCard :quantity="quantity" :variantId="selectedVariant" class="btn btn-black btn-medium text-uppercase mt-3"></AddToCard>
                       </div>
                     </div>
                   </div>

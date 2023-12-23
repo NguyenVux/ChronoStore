@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@egjs/vue3-flicking": "^4.11.1",
-    "@medusajs/medusa-js": "^6.1.4",
+    "@medusajs/medusa-js": "file:./rebuild_modules/medusa-js",
+    "@paypal/paypal-js": "^8.0.0",
     "@popperjs/core": "^2.11.8",
     "@vladmandic/face-api": "^1.7.12",
     "@vuelidate/core": "^2.0.3",
@@ -25,6 +26,7 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@medusajs/medusa": "^1.19.0",
     "@storefront-ui/vue": "^2.6.0",
     "@types/node": "^20.10.0",
     "@vitejs/plugin-vue": "^4.5.0",

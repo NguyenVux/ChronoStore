@@ -4,6 +4,8 @@ import Product from './Pages/Product.vue';
 import Login from './Pages/Login.vue';
 import Profile from './Pages/Profile.vue';
 import Registration from './Pages/Registration.vue';
+import Shop from './Pages/Shop.vue';
+import Cart from './Pages/Cart.vue';
 import { store } from "./store";
 
 function MustNotLoggedInRoute(to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext){
@@ -53,6 +55,16 @@ export const RegistrationRouteRecord : RouteRecordRaw =  {
     component: Registration,
     beforeEnter: MustNotLoggedInRoute
 }
+export const ShopRouteRecord : RouteRecordRaw =  {
+    path: "/shop",
+    name:"Shop",
+    component: Shop,
+}
+export const CartRouteRecord : RouteRecordRaw =  {
+    path: "/cart",
+    name:"Cart",
+    component: Cart,
+}
 
 
 const routes: RouteRecordRaw[] = [
@@ -60,6 +72,8 @@ const routes: RouteRecordRaw[] = [
     LoginRouteRecord,
     ProfileRouteRecord,
     RegistrationRouteRecord,
+    ShopRouteRecord,
+    CartRouteRecord,
     HomeRouteRecord,
 ];
 

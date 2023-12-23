@@ -9,6 +9,7 @@ import { ServiceKeys } from '../Constants';
 import { MedusaService } from '../services/MedusaStoreService';
 
 import faceOne from '../components/oneFaceImage.vue';
+import { jwtTokenManager } from '@medusajs/medusa-js';
 
 
 const medusa = inject<MedusaService>(ServiceKeys.MedusaJs);
@@ -61,6 +62,7 @@ async function doneCapture(file: Blob){
           store.commit('open-loading');
           const data = await medusa?.customer.faceLogin({email:loginData.email,file:file});
           store.commit('update-token',data?.access_token);
+          jwtTokenManager.registerJwt(data?.access_token as string,'store');
           backToPrevious();
       } catch (err) {
           console.log(err);

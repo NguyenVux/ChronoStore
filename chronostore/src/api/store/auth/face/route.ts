@@ -26,6 +26,10 @@ export async function POST(
                 .every(uid => uid.confidence > 80);
   if(result && uids.length > 0)
   {
+    const a = (req as any);
+    // console.log(a.session);
+    a.session.customer_id = user.id;
+    // console.log(req.user.customer_id);
     const token = jwt.sign(
       { customer_id: user.id, domain: "store" },
       config.projectConfig.jwt_secret,

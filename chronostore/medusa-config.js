@@ -35,7 +35,7 @@ const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
 const plugins = [
   `medusa-fulfillment-manual`,
-  `medusa-payment-manual`,
+  // `medusa-payment-manual`,
   {
     resolve: `@medusajs/file-local`,
     options: {
@@ -43,6 +43,21 @@ const plugins = [
       backend_url: process.env.MEDUSA_ADMIN_BACKEND_URL ?? "http://localhost:9000"
     },
   },
+  // {
+  //   resolve: `medusa-file-s3`,
+  //   options: {
+  //       s3_url: process.env.S3_URL,
+  //       bucket: process.env.S3_BUCKET,
+  //       region: process.env.S3_REGION,
+  //       access_key_id: process.env.S3_ACCESS_KEY_ID,
+  //       secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+  //       cache_control: process.env.S3_CACHE_CONTROL,
+  //       // optional
+  //       download_file_duration:
+  //         process.env.S3_DOWNLOAD_FILE_DURATION,
+  //       prefix: process.env.S3_PREFIX,
+  //   },
+  // },
   {
     resolve: "@medusajs/admin",
     /** @type {import('@medusajs/admin').PluginOptions} */
@@ -59,6 +74,34 @@ const plugins = [
       enableUI: true,
     },
   },
+  {
+    resolve: `medusa-payment-paypal`,
+    options: {
+      sandbox: process.env.PAYPAL_SANDBOX,
+      clientId: process.env.PAYPAL_CLIENT_ID,
+      clientSecret: process.env.PAYPAL_CLIENT_SECRET,
+      authWebhookId: process.env.PAYPAL_AUTH_WEBHOOK_ID,
+    },
+  },
+  {
+    resolve: `medusa-plugin-algolia`,
+    options: {
+      applicationId: process.env.ALGOLIA_APP_ID,
+      adminApiKey: process.env.ALGOLIA_ADMIN_API_KEY,
+      settings: {
+        products: {
+          indexSettings: {
+            searchableAttributes: ["title", "description"],
+            attributesToRetrieve: [
+              "id",
+              "title",
+              "description",
+            ],
+          },
+        },
+      },
+    },
+  }
 ];
 
 const modules = {
